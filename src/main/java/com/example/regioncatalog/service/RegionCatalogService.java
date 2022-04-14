@@ -10,9 +10,9 @@ public interface RegionCatalogService {
 
     RegionCatalog findById(Integer catalogId);
 
-    void save(RegionCatalog fromSingleRegionCatalogRequest);
+    RegionCatalog save(RegionCatalog fromSingleRegionCatalogRequest);
 
-    void update(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest);
+    RegionCatalog update(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest);
 
-    void delete(Integer catalogId);
+    RegionCatalog delete(Integer catalogId);
 }

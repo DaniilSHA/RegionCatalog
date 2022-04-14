@@ -44,7 +44,7 @@ public class RegionCatalogController {
     }
 
     @DeleteMapping("/delete/{catalogId}")
-    public void update(@PathVariable("catalogId") Integer catalogId) {
+    public void delete(@PathVariable("catalogId") Integer catalogId) {
         if (regionCatalogService.findById(catalogId) == null) throw new RuntimeException("RegionCatalog don't find");
         regionCatalogService.delete(catalogId);
     }

@@ -22,7 +22,6 @@ public class RegionCatalogServiceImpl implements RegionCatalogService {
     private static Logger logger = LoggerFactory.getLogger(RegionCatalogServiceImpl.class);
 
     @Override
-    @Cacheable(cacheNames = "region_catalog")
     public List<RegionCatalog> findAll() {
         logger.info("*** ВЫПОЛНЕНИЕ findAll() В БАЗЕ ДАННЫХ ***");
         return regionCatalogMapper.findAll();
@@ -36,23 +35,37 @@ public class RegionCatalogServiceImpl implements RegionCatalogService {
     }
 
     @Override
-    @CachePut(cacheNames = "region_catalog", key = "#fromSingleRegionCatalogRequest.title")
-    public void save(RegionCatalog fromSingleRegionCatalogRequest) {
+    public RegionCatalog save(RegionCatalog fromSingleRegionCatalogRequest) {
         logger.info("*** ВЫПОЛНЕНИЕ save() В БАЗЕ ДАННЫХ ***");
         regionCatalogMapper.save(fromSingleRegionCatalogRequest);
+        return makeRegionCatalogEntity(fromSingleRegionCatalogRequest);
     }
 
     @Override
     @CachePut(cacheNames = "region_catalog", key = "#catalogId")
-    public void update(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest) {
+    public RegionCatalog update(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest) {
         logger.info("*** ВЫПОЛНЕНИЕ update() В БАЗЕ ДАННЫХ ***");
         regionCatalogMapper.update(catalogId, fromSingleRegionCatalogRequest);
+        return makeRegionCatalogEntity(catalogId, fromSingleRegionCatalogRequest);
     }
 
     @Override
     @CacheEvict(cacheNames = "region_catalog", key = "#catalogId")
-    public void delete(Integer catalogId) {
+    public RegionCatalog delete(Integer catalogId) {
         logger.info("*** ВЫПОЛНЕНИЕ delete() В БАЗЕ ДАННЫХ ***");
+        RegionCatalog deletedRegionCatalog = regionCatalogMapper.findById(catalogId);
         regionCatalogMapper.delete(catalogId);
+        return makeRegionCatalogEntity(catalogId, deletedRegionCatalog);
+    }
+
+    private RegionCatalog makeRegionCatalogEntity(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest) {
+        return new RegionCatalog(catalogId,
+                fromSingleRegionCatalogRequest.getTitle(),
+                fromSingleRegionCatalogRequest.getShortTitle()
+        );
+    }
+
+    private RegionCatalog makeRegionCatalogEntity (RegionCatalog regionCatalog) {
+        return regionCatalog.clone();
     }
 }
