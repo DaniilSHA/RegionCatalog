@@ -35,18 +35,20 @@ public class RegionCatalogServiceImpl implements RegionCatalogService {
     }
 
     @Override
-    public RegionCatalog save(RegionCatalog fromSingleRegionCatalogRequest) {
+    @CachePut(cacheNames = "region_catalog", key = "#regionCatalogForSave.id")
+    public RegionCatalog save(RegionCatalog regionCatalogForSave) {
         logger.info("*** ВЫПОЛНЕНИЕ save() В БАЗЕ ДАННЫХ ***");
-        regionCatalogMapper.save(fromSingleRegionCatalogRequest);
-        return makeRegionCatalogEntity(fromSingleRegionCatalogRequest);
+        regionCatalogMapper.save(regionCatalogForSave);
+        regionCatalogForSave.setId(regionCatalogMapper.getMaxId());
+        return makeRegionCatalogEntity(regionCatalogForSave);
     }
 
     @Override
     @CachePut(cacheNames = "region_catalog", key = "#catalogId")
-    public RegionCatalog update(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest) {
+    public RegionCatalog update(Integer catalogId, RegionCatalog regionCatalogForUpdate) {
         logger.info("*** ВЫПОЛНЕНИЕ update() В БАЗЕ ДАННЫХ ***");
-        regionCatalogMapper.update(catalogId, fromSingleRegionCatalogRequest);
-        return makeRegionCatalogEntity(catalogId, fromSingleRegionCatalogRequest);
+        regionCatalogMapper.update(catalogId, regionCatalogForUpdate);
+        return makeRegionCatalogEntity(catalogId, regionCatalogForUpdate);
     }
 
     @Override
@@ -58,14 +60,14 @@ public class RegionCatalogServiceImpl implements RegionCatalogService {
         return makeRegionCatalogEntity(catalogId, deletedRegionCatalog);
     }
 
-    private RegionCatalog makeRegionCatalogEntity(Integer catalogId, RegionCatalog fromSingleRegionCatalogRequest) {
+    private RegionCatalog makeRegionCatalogEntity(Integer catalogId, RegionCatalog fromRegionCatalog) {
         return new RegionCatalog(catalogId,
-                fromSingleRegionCatalogRequest.getTitle(),
-                fromSingleRegionCatalogRequest.getShortTitle()
+                fromRegionCatalog.getTitle(),
+                fromRegionCatalog.getShortTitle()
         );
     }
 
-    private RegionCatalog makeRegionCatalogEntity (RegionCatalog regionCatalog) {
-        return regionCatalog.clone();
+    private RegionCatalog makeRegionCatalogEntity (RegionCatalog fromRegionCatalog) {
+        return fromRegionCatalog.clone();
     }
 }

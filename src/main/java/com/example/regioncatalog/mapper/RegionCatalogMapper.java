@@ -25,4 +25,7 @@ public interface RegionCatalogMapper {
 
     @Delete("delete from region_catalog where id = #{id}")
     void delete(@Param("id") Integer catalogId);
+
+    @Select("select max(id) from region_catalog")
+    Integer getMaxId();
 }
